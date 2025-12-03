@@ -1,0 +1,570 @@
+<!-- Chosen Palette: Slate & Blue Harmony - Using Slate (neutrals) for structure and Blue (primary) for action/data, with Amber accents for highlights. -->
+<!-- Application Structure Plan: A single-page vertical scroll application with a sticky navigation bar. 
+     1. Hero Section: Immediate value proposition and identity.
+     2. Services Explorer: Interactive grid where users click to reveal specific deliverables for each service category.
+     3. Impact Analysis: A 'Before vs After' Radar Chart visualizing the benefits (Efficiency, Professionalism, etc.) to justify the investment.
+     4. Process Timeline: An interactive horizontal stepper to demystify the workflow.
+     5. Packages & Value: A Bar Chart comparing service volume across packages, followed by clickable pricing cards.
+     6. Contact: Final call to action.
+     This structure moves from "What" (Services) to "Why" (Impact) to "How" (Process) to "How Much" (Pricing). -->
+<!-- Visualization & Content Choices: 
+     1. Services: Interactive Cards -> Goal: Inform -> Users click cards to see detailed lists (e.g., 'Posters', 'Result Sheets') -> Justification: Reduces cognitive load by hiding details until requested.
+     2. Impact Analysis: Radar Chart (Chart.js) -> Goal: Compare -> Visualizes the qualitative improvements (Efficiency, Reach, Branding) -> Justification: Radar charts are excellent for multi-variable qualitative scoring.
+     3. Package Comparison: Bar Chart (Chart.js) -> Goal: Compare -> Visualizes the 'Design Volume' and 'Support Level' differences between packages -> Justification: Makes the 'Premium' value obvious visually.
+     4. Workflow: CSS/JS Stepper -> Goal: Change/Flow -> Users click steps to read descriptions -> Justification: Linear progression needs a linear UI. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Digital Services | Interactive Proposal</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons (No SVG files) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #334155; }
+        h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .step-active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+        }
+        
+        .nav-link.active {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        /* Smooth Scroll */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-blue-600 mr-2"></i>Digital Partner</span>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#services" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Services</a>
+                    <a href="#impact" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Impact</a>
+                    <a href="#workflow" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Workflow</a>
+                    <a href="#packages" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pricing</a>
+                    <a href="#contact" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-slate-50 border-b border-slate-200 pt-16 pb-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="inline-block p-2 px-4 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold mb-4">
+                Remote Digital Support Partner
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                School Digital Services Proposal
+            </h1>
+            <p class="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+                Empowering your institution with professional design, automated academic IT solutions, and strategic social media management.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#services" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-50 transition shadow-sm">
+                    Explore Services
+                </a>
+                <a href="#packages" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                    View Packages
+                </a>
+            </div>
+            <div class="mt-8 text-sm text-slate-500 font-medium">
+                Prepared by Mohd Sameer
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Services I Provide</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    A comprehensive suite of digital solutions designed to integrate seamlessley with your school's daily functions. Click on any card below to see specific deliverables.
+                </p>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="services-grid">
+                <!-- Content populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Analysis (Data Viz) -->
+    <section id="impact" class="py-20 bg-slate-50 border-y border-slate-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6">Key Benefits for the School</h2>
+                    <p class="text-slate-600 mb-6">
+                        Outsourcing your digital needs transforms operational chaos into streamlined efficiency. The chart illustrates the projected qualitative improvements in key areas after implementing this partnership.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-rocket"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-slate-800">Efficiency & Focus</h4>
+                                <p class="text-sm text-slate-600">Faculty can focus on academics while I handle the technical workload.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-check-double"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-slate-800">Professional Consistency</h4>
+                                <p class="text-sm text-slate-600">Unified branding across reports, social media, and banners.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-slate-800">Increased Outreach</h4>
+                                <p class="text-sm text-slate-600">Strategic designs maximizing visibility for admissions.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visualization Container -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="text-center text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wide">Transformation Impact Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-4">Scale: 1 (Low) to 10 (Optimized)</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">How I Work</h2>
+                <p class="text-slate-600">
+                    A transparent, circular workflow ensuring clarity, swift execution, and continuous support.
+                </p>
+            </div>
+
+            <!-- Workflow Stepper -->
+            <div class="relative">
+                <!-- Connecting Line -->
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-100 -z-10 -translate-y-1/2 rounded-full"></div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-4" id="workflow-steps">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Dynamic Workflow Details -->
+            <div class="mt-12 bg-slate-50 rounded-xl p-8 border border-slate-200 text-center transition-all duration-300" id="workflow-detail">
+                <h3 class="text-xl font-bold text-slate-800 mb-2" id="detail-title">Select a step</h3>
+                <p class="text-slate-600" id="detail-desc">Click on the workflow steps above to understand the process details.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing & Packages Section -->
+    <section id="packages" class="py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Monthly Packages</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    Choose the package that best fits your school's volume and complexity needs. The chart below compares the tangible output volume per package.
+                </p>
+            </div>
+
+            <!-- Package Viz -->
+            <div class="mb-16 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 max-w-3xl mx-auto">
+                <h3 class="text-center text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wide">Package Value Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="packageChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pricing Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    <!-- BASIC PLAN -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col hover:border-blue-300 transition relative overflow-hidden">
+        <h3 class="text-xl font-bold text-slate-800 mb-1">BASIC PLAN</h3>
+        <p class="text-sm text-slate-500 mb-4">Ideal for small schools needing consistent creative support</p>
+        
+        <div class="text-4xl font-bold text-blue-600 mb-6">
+            ₹4,999 <span class="text-base font-normal text-slate-400">/ Month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-grow text-sm text-slate-600">
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>12 professionally designed posts</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>2 reels (event recap / promotional)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Certificate designs (achievement, participation, merit)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Notice & circular formatting</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>2 worksheets or timetable designs per month</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>WhatsApp-ready creative support</li>
+        </ul>
+
+        <button class="w-full py-3 px-4 rounded-lg border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition">
+            Select Basic
+        </button>
+    </div>
+
+    <!-- STANDARD PLAN -->
+    <div class="bg-white rounded-2xl shadow-md border-2 border-blue-600 p-8 flex flex-col relative overflow-hidden transform md:-translate-y-4">
+        <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">POPULAR</div>
+
+        <h3 class="text-xl font-bold text-slate-800 mb-1">STANDARD PLAN</h3>
+        <p class="text-sm text-slate-500 mb-4">Perfect for schools requiring both creative & academic IT support</p>
+        
+        <div class="text-4xl font-bold text-blue-600 mb-6">
+            ₹7,999 <span class="text-base font-normal text-slate-400">/ Month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-grow text-sm text-slate-600">
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>16 premium creative posts</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>4 reels (events + promotional)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Teacher material support</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Worksheets & question paper formatting</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Timetables</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Result support (auto total, percentage, grades)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Attendance report & monthly summary</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Certificates & notices included</li>
+        </ul>
+
+        <button class="w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+            Select Standard
+        </button>
+    </div>
+
+    <!-- PREMIUM PLAN -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col hover:border-amber-400 transition relative overflow-hidden">
+        <h3 class="text-xl font-bold text-slate-800 mb-1">PREMIUM PLAN</h3>
+        <p class="text-sm text-slate-500 mb-4">Designed for schools seeking a complete digital & academic partner</p>
+        
+        <div class="text-4xl font-bold text-amber-600 mb-6">
+            ₹12,000 <span class="text-base font-normal text-slate-400">/ Month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-grow text-sm text-slate-600">
+            <li class="flex"><i class="fa-solid fa-infinity text-amber-500 mr-2"></i>Unlimited creatives (posters, worksheets, banners, certificates)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>6–8 reels per month</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Full academic IT automation package</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Result sheets + attendance automation</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Class analysis dashboards & marksheets</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Admission campaign package</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Teacher support (worksheets, materials, reports)</li>
+            <li class="flex"><i class="fa-solid fa-check text-green-500 mr-2"></i>Priority delivery & dedicated assistance</li>
+        </ul>
+
+        <button class="w-full py-3 px-4 rounded-lg border border-amber-400 text-amber-600 font-semibold hover:bg-amber-50 transition">
+            Select Premium
+        </button>
+    </div>
+
+</div>
+
+    </section>
+
+    <!-- Why Choose Me Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Why Partner With Me?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-4 rounded-xl bg-slate-50">
+                    <div class="text-3xl text-blue-600 mb-3"><i class="fa-solid fa-school"></i></div>
+                    <h4 class="font-bold text-slate-800 mb-1">School-Specific</h4>
+                    <p class="text-sm text-slate-600">Deep understanding of academic needs.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50">
+                    <div class="text-3xl text-green-600 mb-3"><i class="fa-solid fa-wallet"></i></div>
+                    <h4 class="font-bold text-slate-800 mb-1">Cost-Effective</h4>
+                    <p class="text-sm text-slate-600">Professional results at a fraction of hiring.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50">
+                    <div class="text-3xl text-amber-500 mb-3"><i class="fa-solid fa-handshake"></i></div>
+                    <h4 class="font-bold text-slate-800 mb-1">Reliable</h4>
+                    <p class="text-sm text-slate-600">Consistent, proactive remote support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <footer id="contact" class="bg-slate-900 text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-8">Let's Elevate Your School's Digital Presence</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-blue-400 mb-4">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <p class="text-slate-300">+91 7393912341</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-blue-400 mb-4">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <p class="text-slate-300">sameersk7262@gmail.com</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-blue-400 mb-4">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <p class="text-slate-300">Remote / Kannauj, Uttar Pradesh, India</p>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 text-slate-500 text-sm">
+                &copy; 2024 Mohd Sameer Digital Services. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data Structures
+        const servicesData = [
+            {
+                icon: 'fa-pen-nib',
+                title: 'Designing',
+                details: ['Posters', 'Brochures', 'Certificates', 'Banners', 'Custom Templates']
+            },
+            {
+                icon: 'fa-share-nodes',
+                title: 'Social Media',
+                details: ['Content Strategy', 'Posts Creation', 'Reels Covers', 'Festival Graphics']
+            },
+            {
+                icon: 'fa-laptop-code',
+                title: 'Academic IT',
+                details: ['Marksheet Automation', 'Result Sheets', 'Data Dashboards', 'Operational Tools']
+            },
+            {
+                icon: 'fa-bullhorn',
+                title: 'Admission Support',
+                details: ['Campaign Visuals', 'Prospectus Design', 'Admission Posters', 'Targeted Ads']
+            },
+            {
+                icon: 'fa-globe',
+                title: 'Website Updates',
+                details: ['Content Management', 'Graphic Insertion', 'Structural Fixes', 'Maintenance']
+            }
+        ];
+
+        const workflowData = [
+            { step: 1, title: 'Requirements', icon: 'fa-clipboard-list', desc: 'Briefing & data collection to understand your specific needs.' },
+            { step: 2, title: 'Design', icon: 'fa-pen-ruler', desc: 'Drafting initial concepts and editing based on school guidelines.' },
+            { step: 3, title: 'Preview', icon: 'fa-eye', desc: 'Presenting drafts for your review and feedback.' },
+            { step: 4, title: 'Revisions', icon: 'fa-pen-to-square', desc: 'Refining the work to ensure it meets your exact standards.' },
+            { step: 5, title: 'Delivery', icon: 'fa-rocket', desc: 'Providing high-resolution final outputs ready for use.' },
+            { step: 6, title: 'Support', icon: 'fa-headset', desc: 'Continuous updates and maintenance support.' }
+        ];
+
+        // --- Render Services ---
+        const servicesGrid = document.getElementById('services-grid');
+        servicesData.forEach((service, index) => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition cursor-pointer group';
+            card.innerHTML = `
+                <div class="w-12 h-12 rounded-lg bg-slate-50 text-blue-600 flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <i class="fa-solid ${service.icon}"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">${service.title}</h3>
+                <div class="hidden-details text-sm text-slate-500 space-y-1">
+                    ${service.details.map(d => `<div class="flex items-center"><i class="fa-solid fa-caret-right text-blue-400 mr-2"></i>${d}</div>`).join('')}
+                </div>
+                <div class="mt-4 text-blue-600 text-sm font-medium group-hover:underline">View Deliverables</div>
+            `;
+            // Simple expansion logic
+            const detailsDiv = card.querySelector('.hidden-details');
+            detailsDiv.style.display = 'none';
+            card.addEventListener('click', () => {
+                const isHidden = detailsDiv.style.display === 'none';
+                detailsDiv.style.display = isHidden ? 'block' : 'none';
+                card.querySelector('.mt-4').textContent = isHidden ? 'Hide Deliverables' : 'View Deliverables';
+            });
+            servicesGrid.appendChild(card);
+        });
+
+        // --- Render Workflow ---
+        const workflowContainer = document.getElementById('workflow-steps');
+        const detailTitle = document.getElementById('detail-title');
+        const detailDesc = document.getElementById('detail-desc');
+        const workflowDetailBox = document.getElementById('workflow-detail');
+
+        workflowData.forEach((item, index) => {
+            const stepBtn = document.createElement('div');
+            stepBtn.className = `flex flex-col items-center cursor-pointer group step-trigger`;
+            stepBtn.innerHTML = `
+                <div class="w-12 h-12 rounded-full border-2 border-slate-200 bg-white flex items-center justify-center text-slate-400 font-bold mb-3 z-10 transition-all duration-300 hover:border-blue-500 hover:text-blue-600" id="step-circle-${index}">
+                    ${item.step}
+                </div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide group-hover:text-blue-600">${item.title}</span>
+            `;
+            stepBtn.addEventListener('click', () => {
+                // Update text
+                detailTitle.textContent = `${item.step}. ${item.title}`;
+                detailDesc.textContent = item.desc;
+                
+                // Highlight active
+                document.querySelectorAll('.step-trigger div').forEach(div => {
+                    div.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                    div.classList.add('bg-white', 'text-slate-400', 'border-slate-200');
+                });
+                const activeCircle = document.getElementById(`step-circle-${index}`);
+                activeCircle.classList.remove('bg-white', 'text-slate-400', 'border-slate-200');
+                activeCircle.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                
+                // Animate box
+                workflowDetailBox.classList.add('ring-2', 'ring-blue-100');
+                setTimeout(() => workflowDetailBox.classList.remove('ring-2', 'ring-blue-100'), 300);
+            });
+            workflowContainer.appendChild(stepBtn);
+        });
+        
+        // Trigger click on first step to init
+        document.querySelector('.step-trigger').click();
+
+        // --- Chart 1: Impact Analysis (Radar) ---
+        const ctxImpact = document.getElementById('impactChart').getContext('2d');
+        new Chart(ctxImpact, {
+            type: 'radar',
+            data: {
+                labels: ['Efficiency', 'Brand Consistency', 'Parent Outreach', 'Data Accuracy', 'Modernization'],
+                datasets: [{
+                    label: 'Current State',
+                    data: [4, 5, 3, 5, 3],
+                    fill: true,
+                    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                    borderColor: 'rgb(148, 163, 184)',
+                    pointBackgroundColor: 'rgb(148, 163, 184)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(148, 163, 184)'
+                }, {
+                    label: 'With Partnership',
+                    data: [9, 9, 8, 9, 8],
+                    fill: true,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgb(59, 130, 246)',
+                    pointBackgroundColor: 'rgb(59, 130, 246)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(59, 130, 246)'
+                }]
+            },
+            options: {
+                elements: { line: { borderWidth: 3 } },
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                },
+                maintainAspectRatio: false,
+                responsive: true
+            }
+        });
+
+ 
+   // --- Chart 2: Package Comparison (Bar) ---
+const ctxPackage = document.getElementById('packageChart').getContext('2d');
+new Chart(ctxPackage, {
+    type: 'bar',
+    data: {
+        labels: ['Basic', 'Standard', 'Premium'],
+        datasets: [
+            {
+                label: 'Creatives / Posts Volume',
+                data: [12, 16, 50], // 50 visual = Unlimited
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Reels / Video Support',
+                data: [2, 4, 8],
+                backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                borderColor: 'rgba(245, 158, 11, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Academic IT Support (Score)',
+                data: [1, 6, 10],
+                backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 55,
+                title: { display: true, text: 'Relative Service Value' }
+            }
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label + ': ';
+                        if (context.datasetIndex === 0 && context.parsed.y === 50)
+                            return label + 'Unlimited';
+                        return label + context.parsed.y;
+                    }
+                }
+            }
+        }
+    }
+});
+
+
+    </script>
+</body>
+</html>
